@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
-import User from '../models/User.js'
-import { verifyToken } from '../utill/jwt.js'
+import User from '../models/user.js'
+import { verifyToken } from '../util/jwt.js'
 
 const protect = asyncHandler(async (req, res, next) => {
   let token = req.headers['x-access-token'] || req.headers['authorization']
@@ -26,7 +26,7 @@ const protect = asyncHandler(async (req, res, next) => {
 })
 
 const adminOnly = asyncHandler(async (req, res, next) => {
-  if (!req.user.isAdmin) {
+  if (req.user.role !== 'admin') {
     res.status(403)
     throw new Error('Not authorized')
   }

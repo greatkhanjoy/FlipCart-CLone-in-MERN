@@ -1,6 +1,10 @@
 import dotenv from 'dotenv'
 import express from 'express'
 
+//Import Files
+import connectDB from '../config/db.js'
+import { errorHandler, notFound } from '../middlewares/errorHandler.js'
+
 //Initialization
 dotenv.config()
 const app = express()
@@ -13,6 +17,17 @@ app.use(express.urlencoded({ extended: true }))
 //Routes
 
 //After Middlwares
+app.use(notFound)
+app.use(errorHandler)
 
 //Start server
-app.listen(port, () => console.log(`Server is running on ${port}`))
+const start = async () => {
+  try {
+    await connectDB()
+    app.listen(port, () => console.log(`Server started on port ${port}`))
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+start()

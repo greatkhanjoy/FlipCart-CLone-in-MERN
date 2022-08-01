@@ -7,6 +7,7 @@ import connectDB from './config/db.js'
 import { errorHandler, notFound } from './middlewares/errorHandler.js'
 import authRoutes from './routes/authRoutes.js'
 import brandRoutes from './routes/brandRoutes.js'
+import cartRoutes from './routes/cartRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import userRoutes from './routes/userRoutes.js'
@@ -26,6 +27,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/brands', brandRoutes)
+app.use('/api/carts', cartRoutes)
 
 //Static files
 const __dirname = path.resolve()

@@ -14,10 +14,16 @@ const cartHelper = async (userid) => {
         return acc + curr.quantity
       }, 0),
     }
+  } else {
+    return {
+      count: 0,
+      totalPrice: 0,
+      totalItems: 0,
+    }
   }
 }
 
-//@desc Get carts
+//@desc Get cart
 //@route GET /api/carts
 //@access Private
 const getCarts = asyncHandler(async (req, res) => {
@@ -28,18 +34,7 @@ const getCarts = asyncHandler(async (req, res) => {
     count: cartdetails.count,
     totalPrice: cartdetails.totalPrice,
     totalItems: cartdetails.totalItems,
-    carts,
-  })
-})
-
-//@desc Get a cart
-//@route GET /api/carts/:id
-//@access Private
-const getCart = asyncHandler(async (req, res, next) => {
-  const cart = await Cart.findById(req.params.id)
-  res.status(200).json({
-    success: true,
-    data: cart,
+    cartItems: carts,
   })
 })
 
@@ -88,7 +83,7 @@ const addToCart = asyncHandler(async (req, res) => {
       count: cartdetails.count,
       totalPrice: cartdetails.totalPrice,
       totalItems: cartdetails.totalItems,
-      cart: cartData,
+      cartItems: cartData,
     })
   } else {
     //if cart does not exist, create cart
@@ -99,37 +94,9 @@ const addToCart = asyncHandler(async (req, res) => {
       count: cartdetails.count,
       totalPrice: cartdetails.totalPrice,
       totalItems: cartdetails.totalItems,
-      cart,
+      cartItems: cart,
     })
   }
 })
 
-//@desc Update cart
-//@route PUT /api/carts/:id
-//@access Private
-const updateCart = asyncHandler(async (req, res, next) => {
-  const cart = await Cart.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  })
-  res.status(200).json({
-    success: true,
-    count: cartdetails.count,
-    totalPrice: cartdetails.totalPrice,
-    totalItems: cartdetails.totalItems,
-    cart,
-  })
-})
-
-//@desc Delete cart
-//@route DELETE /api/carts/:id
-//@access Private
-const deleteCart = asyncHandler(async (req, res, next) => {
-  await Cart.findByIdAndDelete(req.params.id)
-  res.status(200).json({
-    success: true,
-    data: {},
-  })
-})
-
-export { getCarts, getCart, addToCart, updateCart, deleteCart }
+export { getCarts, addToCart }

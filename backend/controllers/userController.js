@@ -31,8 +31,7 @@ const createUser = asyncHandler(async (req, res) => {
     !username ||
     !password ||
     !role ||
-    !mobile ||
-    !profileImage
+    !mobile
   ) {
     res.status(400)
     throw new Error('Please enter all required fields')

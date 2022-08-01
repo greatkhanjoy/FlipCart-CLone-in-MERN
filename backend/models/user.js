@@ -54,6 +54,8 @@ const userSchema = new Schema(
     },
     profileImage: {
       type: String,
+      default:
+        'https://monstar-lab.com/global/wp-content/uploads/sites/11/2019/04/male-placeholder-image.jpeg',
     },
   },
   { timeStamps: true }

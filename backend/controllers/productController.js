@@ -26,12 +26,22 @@ const getProduct = asyncHandler(async (req, res) => {
 //@route   - POST /api/products
 //@access  - Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  req.body.slug = slugify(req.body.name, { lower: true })
+  const slugExists = await Product.findOne({
+    slug: slugify(req.body.name, { lower: true }),
+  })
+  if (slugExists) {
+    const newSlug =
+      req.body.name + '-' + Math.floor(Math.random() * (10 - 0 + 1))
+    req.body.slug = slugify(newSlug, { lower: true })
+  } else {
+    req.body.slug = slugify(req.body.name, { lower: true })
+  }
+
   req.body.createdBy = req.user._id
   req.body.images = []
   if (req.files.length > 0) {
     req.body.images = req.files.map((file) => {
-      return { img: file.filename }
+      return { img: `/uploads/${file.filename}` }
     })
   }
   const newProduct = await Product.create(req.body)
@@ -56,7 +66,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   req.body.images = checkProduct.images
   if (req.files.length > 0) {
     req.body.images = req.files.map((file) => {
-      return { img: file.filename }
+      return { img: `/uploads/${file.filename}` }
     })
   }
 

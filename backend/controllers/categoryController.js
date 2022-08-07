@@ -7,7 +7,9 @@ function createCategories(categories, parentId = null) {
   const categoryList = []
   let category
   if (parentId == null) {
-    category = categories.filter((cat) => cat.parentId == '')
+    category = categories.filter(
+      (cat) => cat.parentId == null || cat.parentId == ''
+    )
   } else {
     category = categories.filter((cat) => cat.parentId == parentId)
   }
@@ -32,6 +34,7 @@ function createCategories(categories, parentId = null) {
 //@access  - Public
 const getCategories = asyncHandler(async (req, res) => {
   const categories = await Category.find()
+
   if (categories) {
     const categoryList = await createCategories(categories)
     return res.status(200).json(categoryList)
@@ -44,7 +47,22 @@ const getCategories = asyncHandler(async (req, res) => {
 //@route   - POST /api/categories
 //@access  - Private/Admin
 const createCategory = asyncHandler(async (req, res) => {
-  req.body.slug = slugify(req.body.name, { lower: true })
+  const slugExists = await Category.findOne({
+    slug: slugify(req.body.name, { lower: true }),
+  })
+  if (slugExists) {
+    const newSlug =
+      req.body.name + '-' + Math.floor(Math.random() * (10 - 0 + 1))
+    req.body.slug = slugify(newSlug, { lower: true })
+  } else {
+    req.body.slug = slugify(req.body.name, { lower: true })
+  }
+
+  req.body.image = ''
+  if (req.file) {
+    req.body.image = `/uploads/${req.file.filename}`
+  }
+
   const newCategory = await Category.create(req.body)
   res.status(200).json(newCategory)
 })
@@ -66,11 +84,26 @@ const getCategory = asyncHandler(async (req, res) => {
 //@route   - PUT /api/categories/:id
 //@access  - Private/Admin
 const updateCategory = asyncHandler(async (req, res) => {
-  const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  })
-  res.status(200).json(category)
+  const category = await Category.findById(req.params.id)
+  if (!category) {
+    res.status(404)
+    throw new Error('Category not found')
+  }
+
+  req.body.image = category.image
+  if (req.file) {
+    req.body.image = `/uploads/${req.file.filename}`
+  }
+
+  const categoryUpdate = await Category.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+  res.status(200).json(categoryUpdate)
 })
 
 //@desc    - Delete category

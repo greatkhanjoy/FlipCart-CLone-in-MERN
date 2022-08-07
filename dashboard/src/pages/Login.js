@@ -1,8 +1,37 @@
 import { LockClosedIcon } from '@heroicons/react/solid'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { login as signIn } from '../actions'
 import InputGroup from '../components/util/InputGroup'
 
 const Login = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const login = useSelector((state) => state.login)
+  const { loading, error, loggedin } = login
+
+  //form state
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  useEffect(() => {
+    if (loggedin) {
+      navigate('/')
+    }
+    if (error) {
+      toast.error(error)
+    }
+  }, [navigate, loggedin, error])
+
+  //Login form handler
+  const loginHandler = (e) => {
+    e.preventDefault()
+    dispatch(signIn({ email, password }))
+  }
+
   return (
     <>
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -28,7 +57,11 @@ const Login = () => {
               </Link>
             </p>
           </div>
-          <form className="mt-8 space-y-6" method="POST">
+          <form
+            className="mt-8 space-y-6"
+            onSubmit={loginHandler}
+            method="POST"
+          >
             <input type="hidden" name="remember" defaultValue="true" />
             <div className="rounded-md shadow-sm -space-y-px">
               <InputGroup
@@ -39,6 +72,8 @@ const Login = () => {
                 isRequired={true}
                 className="rounded-t-md"
                 placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <InputGroup
                 label="Password"
@@ -48,6 +83,8 @@ const Login = () => {
                 isRequired={true}
                 placeholder="Password"
                 className="rounded-b-md"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -65,6 +102,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
+                disabled={loading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
@@ -73,7 +111,7 @@ const Login = () => {
                     aria-hidden="true"
                   />
                 </span>
-                Sign in
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>

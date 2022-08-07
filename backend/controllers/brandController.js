@@ -14,10 +14,20 @@ const getBrands = asyncHandler(async (req, res) => {
 //@route   - POST /api/brands
 //@access  - Private/Admin
 const createBrand = asyncHandler(async (req, res) => {
-  req.body.slug = slugify(req.body.name, { lower: true })
+  const slugExists = await Brand.findOne({
+    slug: slugify(req.body.name, { lower: true }),
+  })
+  if (slugExists) {
+    req.body.slug = slugify(
+      req.body.name + '-' + Math.floor(Math.random() * (10 - 0 + 1)),
+      { lower: true }
+    )
+  } else {
+    req.body.slug = slugify(req.body.name, { lower: true })
+  }
   req.body.image = ''
   if (req.file) {
-    req.body.image = req.file.filename
+    req.body.image = `/uploads/${req.file.filename}`
   }
   const newBrand = await Brand.create(req.body)
   res.status(200).json(newBrand)
@@ -46,7 +56,7 @@ const updateBrand = asyncHandler(async (req, res) => {
   }
   req.body.image = brand.image
   if (req.file) {
-    req.body.image = req.file.filename
+    req.body.image = `/uploads/${req.file.filename}`
   }
   const updatedBrand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

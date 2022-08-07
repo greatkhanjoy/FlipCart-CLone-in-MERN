@@ -9,14 +9,14 @@ import {
 } from '../controllers/authController.js'
 import { protect } from '../middlewares/authMiddleware.js'
 import {
-  loginValidator,
-  loginValidatorTwo,
-  validate,
+  validateLogin,
+  validateLoginTwo,
+  validateRegistration,
 } from '../validators/authValidator.js'
 
-Router.route('/login').post(loginValidator, validate, login)
-Router.route('/login2').post(loginValidatorTwo, validate, loginWithUsername)
-Router.route('/register').post(register)
+Router.route('/login').post(validateLogin, login)
+Router.route('/login2').post(validateLoginTwo, loginWithUsername)
+Router.route('/register').post(validateRegistration, register)
 Router.route('/me').get(protect, profile)
 
 export default Router

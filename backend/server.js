@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import express from 'express'
+// import fileUpload from 'express-fileupload'
 import path from 'path'
 
 //Import Files
@@ -20,6 +21,8 @@ const port = process.env.PORT || 3000
 //Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// app.use(fileUpload())
 
 //Routes
 app.use('/api/auth', authRoutes)

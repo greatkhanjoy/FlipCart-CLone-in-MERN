@@ -7,15 +7,22 @@ import {
   updateCategory,
 } from '../controllers/categoryController.js'
 import { adminOnly, protect } from '../middlewares/authMiddleware.js'
-import { validate, ValidateCategory } from '../validators/authValidator.js'
+import { upload } from '../middlewares/fileUpload.js'
+import validateCategory from '../validators/categoryValidator.js'
 const Router = express.Router()
 
 Router.route('/')
   .get(getCategories)
-  .post(protect, adminOnly, ValidateCategory, validate, createCategory)
+  .post(
+    protect,
+    adminOnly,
+    upload.single('image'),
+    validateCategory,
+    createCategory
+  )
 Router.route('/:id')
   .get(getCategory)
-  .put(protect, adminOnly, ValidateCategory, validate, updateCategory)
+  .put(protect, adminOnly, upload.single('image'), updateCategory)
   .delete(protect, adminOnly, deleteCategory)
 
 export default Router

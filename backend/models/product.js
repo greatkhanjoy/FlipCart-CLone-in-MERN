@@ -24,6 +24,11 @@ const productSchema = new Schema(
       required: [true, 'Product Price is required'],
       min: [0, 'Product Price must be greater than 0'],
     },
+    salePrice: {
+      type: Number,
+      min: [0, 'Product Sale Price must be greater than 0'],
+      default: null,
+    },
     stock: {
       type: Number,
       default: 0,
@@ -57,6 +62,13 @@ const productSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Created By is required'],
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ['published', 'draft', 'trash'],
+      },
+      default: 'draft',
     },
   },
   { timestamps: true }
